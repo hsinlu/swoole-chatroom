@@ -1,0 +1,22 @@
+{
+    "name": "hsinlu/chatroom",
+    "description": "create chat room use swoole.",
+    "type": "php",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "hsinlu",
+            "email": "hsinlu@live.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        },
+        "files": [
+            "app/helpers.php",
+            "app/Middlewares/auth.php"
+        ]
+    }
+}
