@@ -119,7 +119,7 @@ class UserRepository
 	 * @param  [type] $fd [description]
 	 * @return [type]     [description]
 	 */
-	public function movdToPublicChannel($fd)
+	public function moveToPublicChannel($fd)
 	{
 		return $this->moveToChannel($fd, 'public');
 	}
