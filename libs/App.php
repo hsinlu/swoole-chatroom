@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace Libs;
 
 use \Exception;
 use \Closure;
@@ -15,12 +15,4 @@ use \Closure;
 class App 
 {
 	use Event, Container;
-	
-	/**
-	 * [__construct description]
-	 */
-	public function __construct()
-	{
-		
-	}
 }

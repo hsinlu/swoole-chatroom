@@ -1,52 +1,53 @@
 <?php
 
-function sendMessage($server, $type, $message, $from_fd, $to_fd)
+function sendMessage($server, $type, $content, $from_fd, $to_fd)
 {
+	global $app;
+
 	$user = $app->users->getByFd($from_fd);
 
 	// 记录消息
 	$app->messages->create([
 		'fd' => $to_fd,
 		'from_fd' => $from_fd,
-		'message' => $message,
+		'content' => $content,
 		'channel' => 'whisper',
 		'time' => time(),
 		'is_readed' => 0
 	]);
 
-	$server->send($to_fd, json_encode(
-		array_merge([
-			'type' => $type,
+	$server->send($to_fd, json_encode([
+		$type,
+		[
 			'from_fd' => $from_fd,
 			'from_username' => $user['username'],
-		], $message)
-	));
+			'content' => $content
+		]
+	]));
 }
 
 /**
  * 私聊
  * 
  * @param  swoole_server  $server  
- * @param  array|mixed    $message 消息
+ * @param  array|mixed    $content 消息内容
  * @param  int            $from_fd 发送人
  * @param  int            $to_fd   接收人
  */
-function whisper($server, $message, $from_fd, $to_fd)
+function whisper($server, $content, $from_fd, $to_fd)
 {
-	global $app;
-
-	sendMessage($server, 'chat', $message, $from_fd, $to_fd);
+	sendMessage($server, 'chat', $content, $from_fd, $to_fd);
 }
 
 /**
  * 群聊
  * 
  * @param  swoole_server $server  
- * @param  array|mixed   $message 消息
+ * @param  array|mixed   $content 消息内容
  * @param  int           $from_fd 发送人
  * @param  string        $channel 频道，如果没有指定，默认为公共频道
  */
-function mass($server, $message, $from_fd, $channel = 'public')
+function mass($server, $content, $from_fd, $channel = 'public')
 {
 	global $app;
 
@@ -61,22 +62,16 @@ function mass($server, $message, $from_fd, $channel = 'public')
 			continue;
 		}
 
-		sendMessage($server, 'chat', $message, $from_fd, $to_fd);
+		sendMessage($server, 'chat', $content, $from_fd, $to_fd);
 	}
 }
 
-function reply($server, $to_fd, $type, $segments)
+function reply($server, $to_fd, $type, $message)
 {
-	global $app;
-
-	$server->send($to_fd, json_encode(
-		array_merge([
-			'type' => $type,
-		], $segments)
-	));
+	$server->send($to_fd, json_encode([ $type, $message ]));
 }
 
-function broadcast($server, $type, $segments, $except_fd, $channel = 'public')
+function broadcast($server, $type, $message, $except_fd, $channel = 'public')
 {
 	global $app;
 
@@ -92,10 +87,6 @@ function broadcast($server, $type, $segments, $except_fd, $channel = 'public')
 			continue;
 		}
 
-		$server->send($to_fd, json_encode(
-			array_merge([
-				'type' => $type
-			], $segments)
-		));
+		reply($server, $to_fd, $type, $message);
 	}
 }

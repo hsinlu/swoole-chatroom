@@ -13,7 +13,7 @@ class MessageRepository
 		$this->table = new swoole_table(1024);
 		$this->table->column('fd', swoole_table::TYPE_INT, 4);
 		$this->table->column('from_fd', swoole_table::TYPE_INT, 4);
-		$this->table->column('message', swoole_table::TYPE_STRING, 4000);
+		$this->table->column('content', swoole_table::TYPE_STRING, 4000);
 		$this->table->column('channel', swoole_table::TYPE_STRING, 30);
 		$this->table->column('time', swoole_table::TYPE_STRING, 30);
 		$this->table->column('is_readed', swoole_table::TYPE_INT, 4);

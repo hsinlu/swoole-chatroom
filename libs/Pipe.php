@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace Libs;
 
 use \Closure;
 
@@ -35,7 +35,12 @@ class Pipe
 	{
 		$exp = array_reduce($this->pipes, function ($stack, $middleware) {
 			return function ($context) use ($stack, $middleware) {
-				return call_user_func($middleware, $context, $stack);
+				if ($middleware instanceof Closure) {
+					return call_user_func($middleware->bindTo($this->app), $context, $stack);
+				}
+
+				$middleware = new $middleware($this->app);
+				return $middleware->handle($context, $stack);
 			};
 		}, $destination);
 

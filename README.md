@@ -32,13 +32,13 @@ messages
 #### 发送消息
 ```
 // 发送公共消息
-chat::{message}
+chat::{content}
 
 // 发送频道消息
-chat:channel={channel}:{message}
+chat:channel={channel}:{content}
 
 // 发送私聊消息
-chat:fd={fd}:{message}
+chat:fd={fd}:{content}
 
 ```
 
@@ -49,55 +49,54 @@ chat:fd={fd}:{message}
 
 ##### 客户端发送
 ```
-{"type": "login", "username": "hsinlu", "password": "hsinlu"}
+["login",{"username":"hsinlu","password":"hsinlu"}]
 ```
 >>目前服务端未做完整的用户验证，username与password一致即可登录。
 
 ##### 服务端回复
 ```
 // 登录成功
-{"type": "login", "success": "true"}
+["login",{"success":true}]
 // 登录失败
-{"type": "login", "errors": ["用户名和密码不正确。"]}
+["login",{"errors":["用户名和密码不正确。"]}]
 ```
 
 #### 加入聊天室通知
 
 ##### 服务端回复
 ```
-{"type":"join","fd":4,"username":"si"}
+["join",{"fd":4,"username":"hsinlu"}]
 ```
 
 #### 退出聊天室通知
 
 ##### 服务器回复
 ```
-{"type":"leave","fd":3,"username":"si"}
+["leave",{"fd":4,"username":"hsinlu"}]
 ```
 
 #### 获取在线列表
 
 ##### 客户端发送
 ```
-{"type": "list"}
+["list"]
 ```
 
 ##### 服务端回复
 ```
-{"type":"list","users":[{"fd":2,"username":"si","channel":"public","is_online":1},{"fd":3,"username":"xin","channel":"public","is_online":1}]}
+["list",[{"fd":3,"username":"si","channel":"public","is_online":1},{"fd":4,"username":"hsinlu","channel":"public","is_online":1}]]
 ```
-
 
 #### 获取我的历史消息
 
 ##### 客户端发送
 ```
-{"type":"messages"}
+["messages"]
 ```
 
 ##### 服务端回复
 ```
-{"type":"list","users":[{"fd":2,"username":"si","channel":"public","is_online":1},{"fd":3,"username":"xin","channel":"public","is_online":1}]}
+["messages",[{"fd":1,"from_fd":2,"content":"hello","channel":"whisper","time":"1443884147","is_readed":0},{"fd":1,"from_fd":2,"content":"hello si","channel":"whisper","time":"1443884264","is_readed":0}]]
 ```
 
 
@@ -106,13 +105,13 @@ chat:fd={fd}:{message}
 ##### 客户端发送
 ```
 // 公共频道
-{"type":"chat","message":"hello everyone.","id":"670969e2d418a2249508e7763f84eaf6"}
+["chat",{"content":"hello","id":"2b1dc0c605d45cee8887e07e8188795e"}]
 
 // 指定频道
-{"type":"chat","to_channel":"public","message":"hello everyone.","id":"963ad9f2842f867e05712ea48b8ca4e5"}
+["chat",{"to_channel":"public","content":"hello","id":"2b1dc0c605d45cee8887e07e8188795e"}]
 
 // 私聊
-{"type":"chat","to_fd":"3","message":"hello","id":"3f194080e87e66236ae917d6aec7f9c8"}
+["chat",{"to_fd":"1","content":"hello si","id":"7a1c7714b34897fac377fb1213eab409"}]
 ```
 >>id为客户端生成的消息唯一标识
 
@@ -120,14 +119,14 @@ chat:fd={fd}:{message}
 
 ##### 服务端回复
 ```
-{"type":"chat","from_fd":4,"from_username":"si","message":"hello everyone."}
+["chat",{"from_fd":2,"from_username":"hsinlu","content":"hello"}]
 ```
 
 #### 消息发送成功
 
 ##### 服务端回复
 ```
-{"type":"chat","success":true,"id":"670969e2d418a2249508e7763f84eaf6"}
+["chat",{"success":true,"id":"2b1dc0c605d45cee8887e07e8188795e"}]
 ```
 >>id为客户端发送的消息唯一标识，服务端回复指定的id的消息是否发送成功。
 

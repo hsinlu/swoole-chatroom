@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace Libs;
 
 trait Container
 {
@@ -31,13 +31,7 @@ trait Container
 		}
 	}
 
-	/**
-	 * get object from container
-	 * 
-	 * @param  string $name object name in container
-	 * @return object       
-	 */
-	public function __get($name)
+	public function resolve($name)
 	{
 		if (isset($this->container[$name])) {
 			return $this->container[$name];
@@ -59,4 +53,15 @@ trait Container
 
 		return null;
 	}
+
+	/**
+	 * get object from container
+	 * 
+	 * @param  string $name object name in container
+	 * @return object       
+	 */
+	public function __get($name)
+	{
+		return $this->resolve($name);
+	}	
 }

@@ -1,9 +1,8 @@
 <?php
 
-namespace App;
+namespace Libs;
 
 use Closure;
-use App\Pipe;
 
 trait Event
 {

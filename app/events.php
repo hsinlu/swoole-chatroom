@@ -7,8 +7,8 @@ $app->on('connect', function ($context) use ($app) {
 $app->on('login', function ($context) use ($app) {
 	extract($context);
 
-	if ($data->username == $data->password) {
-		$app->users->login($fd, $data->username);
+	if ($message->username == $message->password) {
+		$app->users->login($fd, $message->username);
 
 		// 返回登录成功消息
 		reply($server, $fd, 'login', [ 'success' => true ]);
@@ -16,7 +16,7 @@ $app->on('login', function ($context) use ($app) {
 		// 广播加入聊天室通知
 		broadcast($server, 'join', [
 			'fd' => $fd,
-			'username' => $data->username
+			'username' => $message->username
 		], $fd);
 	} else {
 		reply($server, $fd, 'login', [ 'errors' => [ '用户名和密码不正确。' ] ]);
@@ -37,44 +37,44 @@ $app->on('close', function ($context) use ($app) {
 });
 
 $app->on('list', [
-	auth(), 
+	App\Middlewares\Auth::class, 
 	function ($context) use ($app) {
 		extract($context);
 
-		reply($server, $fd, 'list', [ 'users' => $app->users->all() ]);
+		reply($server, $fd, 'list', $app->users->all());
 	}
 ]);
 
 $app->on('chat', [
-	auth(), 
+	App\Middlewares\Auth::class, 
 	function ($context) use ($app) {
 		extract($context);
 	
-		if (property_exists($data, 'to_fd')) {
+		if (property_exists($message, 'to_fd')) {
 			// 私人聊天
-			whisper($server, $data->message, $fd, $data->to_fd);
-		} else if (property_exists($data, 'to_channel')) {
+			whisper($server, $message->content, $fd, $message->to_fd);
+		} else if (property_exists($message, 'to_channel')) {
 			// 频道聊天
-			mass($server, $data->message, $fd, $data->to_channel);
+			mass($server, $message->content, $fd, $message->to_channel);
 		} else {
 			// 公共聊天
-			mass($server, $data->message, $fd);
+			mass($server, $message->content, $fd);
 		}
 
-		reply($server, $fd, 'chat', ['success' => true, 'id' => $data->id ]);
+		reply($server, $fd, 'chat', ['success' => true, 'id' => $message->id ]);
 	}
 ]);
 
 $app->on('messages', [
-	auth(),
+	App\Middlewares\Auth::class, 
 	function ($context) use ($app) {
 		extract($context);
 	
-		reply($server, $fd, 'messages', [
-			'messages' => $app->messages->orWhere([
+		reply($server, $fd, 'messages', 
+			$app->messages->orWhere([
 				'fd' => $fd,
 				'from_fd' => $fd
 			])
-		]);
+		);
 	}
 ]);

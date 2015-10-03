@@ -1,16 +1,24 @@
 <?php
 
-function auth()
-{
-	global $app;
+namespace App\Middlewares;
 
-	return function ($context, $next) use ($app) {
+class Auth
+{
+	public $app;
+
+	public function __construct($app)
+	{
+		$this->app = $app;
+	}
+
+	public function handle($context, $next)
+	{
 		extract($context);
 
-		if (!$app->users->exist($fd)) {
+		if (!$this->app->users->exist($fd)) {
 			return $server->send($fd, "请输入用户名和密码。");	
 		}
 
 		return $next($context);
-	};
+	}
 }
